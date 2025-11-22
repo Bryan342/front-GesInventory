@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "date": "22-11-2025 10:30",
+    "productId": "PROD001",
+    "productName": "Laptop HP Pavilion",
+    "type": "Entrada",
+    "quantity": 10,
+    "reason": "Compra a proveedor",
+    "user": "admin",
+    "notes": "Llegaron en perfecto estado. Revisado por Juan."
+  },
+  {
+    "id": 2,
+    "date": "22-11-2025 14:15",
+    "productId": "PROD001",
+    "productName": "Laptop HP Pavilion",
+    "type": "Salida",
+    "quantity": 2,
+    "reason": "Venta Directa",
+    "user": "vendedor",
+    "notes": "Cliente solicitó factura #F001-299. Pago con tarjeta."
+  },
+  {
+    "id": 3,
+    "date": "21-11-2025 09:00",
+    "productId": "PROD003",
+    "productName": "Mouse Logitech",
+    "type": "Entrada",
+    "quantity": 50,
+    "reason": "Stock Inicial",
+    "user": "admin",
+    "notes": "Apertura de inventario."
+  }
+]

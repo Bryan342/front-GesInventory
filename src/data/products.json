@@ -1,0 +1,32 @@
+[
+  {
+    "id": "PROD001",
+    "name": "Laptop HP Pavilion",
+    "description": "Laptop HP Pavilion 15.6\" Intel Core i5",
+    "category": "Electrónicos",
+    "price": 15999.90,
+    "currentStock": 30,
+    "minStock": 5,
+    "status": "En Stock"
+  },
+  {
+    "id": "PROD002",
+    "name": "Monitor Samsung 24\"",
+    "description": "Curvo LED Full HD 75Hz",
+    "category": "Periféricos",
+    "price": 3500.00,
+    "currentStock": 0,
+    "minStock": 2,
+    "status": "Sin Stock"
+  },
+  {
+    "id": "PROD003",
+    "name": "Mouse Logitech G203",
+    "description": "Mouse Gamer RGB Lightsync",
+    "category": "Accesorios",
+    "price": 450.50,
+    "currentStock": 12,
+    "minStock": 10,
+    "status": "En Stock"
+  }
+]

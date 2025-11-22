@@ -1,0 +1,5 @@
+[
+  { "id": "C01", "name": "Grupo Wong", "ruc": "20100055511", "type": "VIP" },
+  { "id": "C02", "name": "Minera Yanacocha", "ruc": "20450012399", "type": "Corporativo" },
+  { "id": "C03", "name": "Grifos Primax", "ruc": "20551122334", "type": "Recurrente" }
+]
