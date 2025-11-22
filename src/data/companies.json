@@ -1,0 +1,26 @@
+[
+  { 
+    "id": 1, 
+    "name": "Grupo Wong", 
+    "plan": "Plan Anual", 
+    "ruc": "20100055511",
+    "address": "Av. Javier Prado 123",
+    "status": "Activo"
+  },
+  { 
+    "id": 2, 
+    "name": "Grifos Primax", 
+    "plan": "Plan Mensual", 
+    "ruc": "20551122334",
+    "address": "Carr. Panamericana Sur Km 20",
+    "status": "Pendiente"
+  },
+  { 
+    "id": 3, 
+    "name": "Minera Yanacocha", 
+    "plan": "Plan Corporativo", 
+    "ruc": "20450012399",
+    "address": "Cajamarca S/N",
+    "status": "Activo"
+  }
+]

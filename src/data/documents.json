@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "companyId": 1,
+    "code": "INF-2025-001",
+    "type": "INFORME",
+    "date": "2025-11-01",
+    "fileName": "informe_noviembre.pdf",
+    "notes": "Cierre de mes regular."
+  },
+  {
+    "id": 2,
+    "companyId": 1,
+    "code": "FAC-E001-459",
+    "type": "FACTURA",
+    "date": "2025-11-15",
+    "fileName": "factura_servicios.xml",
+    "notes": "Pago pendiente a 30 días."
+  },
+  {
+    "id": 3,
+    "companyId": 2,
+    "code": "GR-LIM-099",
+    "type": "GUIA",
+    "date": "2025-11-20",
+    "fileName": "guia_remision.pdf",
+    "notes": ""
+  }
+]
