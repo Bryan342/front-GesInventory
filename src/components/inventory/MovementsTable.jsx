@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useMovements } from '../../hooks/useMovements';
-import { Edit2, Sparkles, FileText, Clock } from 'lucide-react';
+import { Sparkles, FileText, Clock } from 'lucide-react';
 import NoteModal from './modals/NoteModal';
 import ClientsListModal from './modals/ClientsListModal';
 import EditMovementModal from './modals/EditMovementModal';
@@ -10,7 +10,6 @@ import QuotationPrintModal from './modals/QuotationPrintModal';
 const MovementsTable = ({ onNavigateToClients }) => {
   const { movements: initialMovements, loading, updateMovement } = useMovements();
   const [localMovements, setLocalMovements] = useState([]);
-  // Combinamos movimientos nuevos (IA) y antiguos (JSON)
   const displayMovements = [...localMovements, ...initialMovements];
 
   // Estados
@@ -22,15 +21,15 @@ const MovementsTable = ({ onNavigateToClients }) => {
   const [isSmartModalOpen, setIsSmartModalOpen] = useState(false);
   const [printData, setPrintData] = useState(null);
 
-  // --- FUNCIÓN MAESTRA: Crear y Vincular ---
+  // --- FUNCIÓN MAESTRA (AHORA CON SESSION STORAGE) ---
   const handleProjectCreate = (items, clientObj) => {
-    // 1. Generar Código
+    // 1. Datos básicos
     const code = `COT-${Math.floor(1000 + Math.random() * 9000)}`; 
     const dateFull = new Date();
     const dateStr = dateFull.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     const dateShort = dateFull.toISOString().split('T')[0];
 
-    // 2. Crear Movimientos en Tabla (Visual)
+    // 2. Crear movimiento visual en tabla
     const newMovements = items.map((item, index) => ({
       id: `${code}-${index + 1}`,
       groupCode: code,
@@ -39,9 +38,9 @@ const MovementsTable = ({ onNavigateToClients }) => {
       productName: item.name,
       type: 'Pendiente', 
       quantity: item.qty,
-      reason: 'Generado por IA', // Motivo técnico
+      reason: 'Generado por IA', 
       user: 'SISTEMA',
-      notes: `Cliente Asignado: ${clientObj.name}`, // Nota detallada
+      notes: `Cliente Asignado: ${clientObj.name}`,
       fullQuotationData: { 
         id: code, 
         client: clientObj.name, 
@@ -53,21 +52,22 @@ const MovementsTable = ({ onNavigateToClients }) => {
 
     setLocalMovements([...newMovements, ...localMovements]);
 
-    // 3. ENVIAR A DOCUMENTOS DEL CLIENTE (Usando ID real)
+    // 3. GUARDAR TEMPORALMENTE (Solo dura lo que dura la sesión)
     const newDoc = {
       code: code,
       type: 'COTIZACION',
       date: dateShort,
       fileName: `Cotizacion_${clientObj.name.replace(/\s+/g, '_')}.pdf`,
-      companyId: clientObj.id, // <--- LA CLAVE: Usamos el ID del cliente real
-      items: items
+      companyId: clientObj.id, 
+      items: items,
+      clientName: clientObj.name // Guardamos nombre para búsquedas fáciles
     };
 
-    // Guardamos en LocalStorage
-    const existingDocs = JSON.parse(localStorage.getItem('fake_generated_docs') || '[]');
-    localStorage.setItem('fake_generated_docs', JSON.stringify([newDoc, ...existingDocs]));
+    // Usamos 'jordy_temp_docs' en sessionStorage. Al cerrar la pestaña, esto desaparece.
+    const existingDocs = JSON.parse(sessionStorage.getItem('jordy_temp_docs') || '[]');
+    sessionStorage.setItem('jordy_temp_docs', JSON.stringify([newDoc, ...existingDocs]));
     
-    alert(`✅ Cotización ${code} generada para ${clientObj.name} y enviada a su carpeta.`);
+    alert(`✅ Cotización ${code} generada temporalmente para la sesión.`);
   };
 
   const handleOpenDocument = (mov) => {
@@ -75,7 +75,7 @@ const MovementsTable = ({ onNavigateToClients }) => {
       setPrintData(mov.fullQuotationData);
     } else {
       setPrintData({
-        id: mov.groupCode || 'DOC',
+        id: mov.groupCode || 'DOC-TEMP',
         client: 'Cliente General',
         date: mov.date,
         items: [{name: mov.productName, qty: mov.quantity}],
@@ -92,14 +92,16 @@ const MovementsTable = ({ onNavigateToClients }) => {
       {/* Header */}
       <div className="flex justify-between items-center mb-8 bg-white p-2 rounded-full border shadow-sm">
         <span className="ml-6 font-medium text-gray-600">Gestión de Inventario</span>
-        <div className="flex gap-2"> 
+        <div className="flex gap-2">
           <button 
             onClick={() => setIsSmartModalOpen(true)}
             className="px-5 py-2 rounded-full text-white bg-gradient-to-r from-violet-600 to-indigo-600 font-bold hover:shadow-lg hover:scale-105 transition flex items-center gap-2 animate-pulse-slow"
           >
-            <Sparkles size={16} /> cotizar
+            <Sparkles size={16} /> IA Cotizador
           </button>
-          <button onClick={() => setIsClientsOpen(true)} className="px-6 py-2 rounded-full text-[#1e1b4b] font-bold hover:bg-gray-100 transition">Ver Reservas</button>
+          <button onClick={() => setIsClientsOpen(true)} className="px-6 py-2 rounded-full text-[#1e1b4b] font-bold hover:bg-gray-100 transition flex items-center gap-2">
+            <FileText size={18} /> Ver Reservas
+          </button>
           <button onClick={onNavigateToClients} className="px-6 py-2 rounded-full text-[#1e1b4b] border-2 border-[#1e1b4b] font-bold hover:bg-blue-50 transition">+ Cliente</button>
         </div>
       </div>
@@ -121,21 +123,18 @@ const MovementsTable = ({ onNavigateToClients }) => {
         <tbody className="text-sm text-gray-600">
           {displayMovements.map((mov) => (
             <tr key={mov.id} className={`border-b border-gray-100 h-16 transition-colors ${mov.type === 'Pendiente' ? 'bg-amber-50' : 'hover:bg-gray-50'}`}>
-              
               <td className="py-3">
                  <div className="flex flex-col">
                    <span className="font-mono font-bold text-gray-800 text-xs">{mov.groupCode || mov.date.split(' ')[0]}</span>
                    <span className="text-[10px] text-gray-400">{mov.date.split(' ')[1] || ''}</span>
                  </div>
               </td>
-              
               <td>
                 <div className="flex flex-col">
                   <span className="font-bold text-gray-800">{mov.productName}</span>
                   <span className="text-xs text-gray-400">{mov.productId}</span>
                 </div>
               </td>
-              
               <td>
                 <span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-fit ${
                   mov.type === 'Pendiente' ? 'bg-amber-100 text-amber-700 border border-amber-200' : 
@@ -145,16 +144,9 @@ const MovementsTable = ({ onNavigateToClients }) => {
                   {mov.type.toUpperCase()}
                 </span>
               </td>
-              
               <td className="font-bold text-center text-lg">{mov.quantity}</td>
-              
-              {/* RESTAURADA COLUMNA MOTIVO */}
               <td>{mov.reason}</td>
-
-              {/* RESTAURADA COLUMNA USUARIO */}
               <td className="text-xs uppercase font-bold text-gray-500">{mov.user}</td>
-              
-              {/* RESTAURADA COLUMNA NOTAS / ACCIONES */}
               <td className="text-right">
                 <div className="flex items-center justify-end gap-2">
                    {(mov.type === 'Pendiente' || mov.type === 'Cotización') ? (

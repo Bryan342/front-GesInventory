@@ -7,15 +7,14 @@ const ClientDocuments = ({ selectedCompany }) => {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [allDocuments, setAllDocuments] = useState(initialDocumentsData);
 
-  // --- CARGAR DOCUMENTOS DE STORAGE ---
+  // --- CARGAR DOCUMENTOS DE SESIÓN ---
   useEffect(() => {
-    const generatedDocs = JSON.parse(localStorage.getItem('fake_generated_docs') || '[]');
-    // Fusionamos con los datos del JSON
-    setAllDocuments([...generatedDocs, ...initialDocumentsData]);
-  }, []); // Se ejecuta al montar
+    // Usamos sessionStorage: Si cierras el navegador, esto se vacía.
+    const tempDocs = JSON.parse(sessionStorage.getItem('jordy_temp_docs') || '[]');
+    setAllDocuments([...tempDocs, ...initialDocumentsData]);
+  }, []); 
 
-  // --- FILTRO: AHORA USAMOS EL ID EXACTO ---
-  // Comparamos doc.companyId con selectedCompany.id (convirtiendo a String por seguridad)
+  // --- FILTRO INTELIGENTE ---
   const companyDocuments = selectedCompany 
     ? allDocuments.filter(doc => String(doc.companyId) === String(selectedCompany.id)) 
     : [];
@@ -47,6 +46,7 @@ const ClientDocuments = ({ selectedCompany }) => {
 
   return (
     <div className="bg-white rounded-3xl shadow-lg p-8 min-h-[500px] flex flex-col relative border border-gray-200 animate-fade-in">
+      {/* Header */}
       <div className="flex justify-between items-start mb-8 border-b pb-6 border-gray-100">
         <div>
             <h2 className="text-3xl font-bold text-black">{selectedCompany.name}</h2>
@@ -59,6 +59,7 @@ const ClientDocuments = ({ selectedCompany }) => {
         </div>
       </div>
 
+      {/* Tabla */}
       <div className="flex-1">
         <table className="w-full text-left">
           <thead>
