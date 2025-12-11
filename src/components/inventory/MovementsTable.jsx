@@ -97,7 +97,7 @@ const MovementsTable = ({ onNavigateToClients }) => {
             onClick={() => setIsSmartModalOpen(true)}
             className="px-5 py-2 rounded-full text-white bg-gradient-to-r from-violet-600 to-indigo-600 font-bold hover:shadow-lg hover:scale-105 transition flex items-center gap-2 animate-pulse-slow"
           >
-            <Sparkles size={16} /> IA Cotizador
+            <Sparkles size={16} /> cotizacion
           </button>
           <button onClick={() => setIsClientsOpen(true)} className="px-6 py-2 rounded-full text-[#1e1b4b] font-bold hover:bg-gray-100 transition flex items-center gap-2">
             <FileText size={18} /> Ver Reservas
