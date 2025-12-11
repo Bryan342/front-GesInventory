@@ -28,5 +28,45 @@
     "currentStock": 12,
     "minStock": 10,
     "status": "En Stock"
+  },
+  {
+    "id": "CCTV001",
+    "name": "Cámara Bullet IP66 Hikvision",
+    "description": "Cámara Exterior 1080p Visión Nocturna",
+    "category": "Seguridad",
+    "price": 180.00,
+    "currentStock": 50,
+    "minStock": 4,
+    "status": "En Stock"
+  },
+  {
+    "id": "CCTV002",
+    "name": "Video Balun (Par)",
+    "description": "Transceptor pasivo de video HD",
+    "category": "Seguridad",
+    "price": 15.00,
+    "currentStock": 200,
+    "minStock": 20,
+    "status": "En Stock"
+  },
+  {
+    "id": "CCTV003",
+    "name": "Fuente de Poder 12V",
+    "description": "Adaptador de voltaje 1A",
+    "category": "Seguridad",
+    "price": 25.00,
+    "currentStock": 45,
+    "minStock": 10,
+    "status": "En Stock"
+  },
+  {
+    "id": "CCTV004",
+    "name": "Cable UTP Cat6 (Metro)",
+    "description": "Cable de red 100% Cobre Exterior",
+    "category": "Seguridad",
+    "price": 2.50,
+    "currentStock": 500,
+    "minStock": 100,
+    "status": "En Stock"
   }
 ]
