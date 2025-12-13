@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 // Imports de Componentes
+import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import LoginPage from './pages/LoginPage';
 import AnimatedTabs from './components/common/AnimatedTabs';
@@ -10,12 +11,13 @@ import ClientDocuments from './components/clients/ClientDocuments';
 import ClientControl from './components/clients/ClientControl';
 import AddCompanyModal from './components/clients/AddCompanyModal';
 
-// --- IMPORTAMOS LOS DATOS DEL JSON ---
+// DATOS E IMAGEN
 import initialCompaniesData from './data/companies.json'; 
+import logo from './assets/logo.png'; // <--- IMPORTAMOS EL LOGO AQUÍ
 
 // Vista simple de Planes
 const PlanesView = ({ onPlanSelect }) => (
-  <div className="grid grid-cols-3 gap-6 mt-8 animate-fade-in">
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 animate-fade-in pb-10">
     {['Plan Mensual', 'Plan Trimestral', 'Plan Anual'].map((plan) => (
       <div 
         key={plan} 
@@ -36,12 +38,11 @@ const PlanesView = ({ onPlanSelect }) => (
 );
 
 function App() {
-  // Estados
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentSection, setCurrentSection] = useState('INVENTARIO'); 
   const [activeTab, setActiveTab] = useState('Productos');
 
-  // --- ESTADO DE EMPRESAS (INICIALIZADO CON JSON) ---
+  // --- ESTADO DE EMPRESAS ---
   const [companies, setCompanies] = useState(initialCompaniesData);
   const [selectedCompanyId, setSelectedCompanyId] = useState(companies[0].id);
   
@@ -49,20 +50,16 @@ function App() {
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
   const [selectedPlanForNewCompany, setSelectedPlanForNewCompany] = useState('');
 
-  // --- LÓGICA DE AGREGAR EMPRESA ---
   const handleAddCompany = ({ name, plan }) => {
     const newId = companies.length > 0 ? Math.max(...companies.map(c => c.id)) + 1 : 1;
-    
     const newCompany = { 
       id: newId, 
       name, 
       plan,
-      // Generamos datos falsos para el nuevo registro
       ruc: "20" + Math.floor(Math.random() * 900000000 + 100000000), 
       address: "Dirección Pendiente",
       status: "Nuevo"
     };
-    
     setCompanies([...companies, newCompany]); 
     setSelectedCompanyId(newId); 
     setIsCompanyModalOpen(false); 
@@ -74,40 +71,64 @@ function App() {
     setIsCompanyModalOpen(true);
   };
 
-  // Obtener empresa actual para pasar sus datos (RUC, Plan, etc) a las vistas
   const currentCompany = companies.find(c => c.id === selectedCompanyId) || companies[0];
-
-  // Login y Navegación (Igual que antes)
-  if (!isAuthenticated) return <LoginPage onLogin={() => setIsAuthenticated(true)} />;
 
   const goToClients = () => { setCurrentSection('CLIENTES'); setActiveTab('Documentos'); };
   const goToInventory = () => { setCurrentSection('INVENTARIO'); setActiveTab('Productos'); };
-  const handleLogout = () => { setIsAuthenticated(false); setCurrentSection('INVENTARIO'); };
+  
+  const handleLogout = () => { 
+    setIsAuthenticated(false); 
+    setCurrentSection('INVENTARIO'); 
+    sessionStorage.removeItem('jordy_temp_docs');
+  };
+
+  if (!isAuthenticated) return <LoginPage onLogin={() => setIsAuthenticated(true)} />;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] relative font-sans text-gray-800">
+    <div className="min-h-screen bg-[#f8fafc] font-sans text-gray-800 relative">
       
+      {/* --------------------------------------------------
+          LOGO FLOTANTE "FUERA DE TODO" (ESTÁTICO) 
+          --------------------------------------------------
+          z-[60] asegura que esté encima del Header (z-40) y Sidebar.
+          fixed top-2 left-4 lo clava en la esquina.
+      */}
+      <div className="fixed top-2 left-4 z-[60] w-16 h-16 bg-white rounded-xl shadow-lg border border-gray-100 p-2 flex items-center justify-center animate-fade-in hover:scale-105 transition-transform cursor-default">
+         <img src={logo} alt="Jordy Security" className="w-full h-full object-contain" />
+      </div>
+
+      {/* HEADER GLOBAL (Barra Blanca) */}
+      <Header onLogout={handleLogout} />
+
+      {/* SIDEBAR (Lista de Empresas) */}
       {currentSection === 'CLIENTES' && (
-        <div className="fixed left-0 top-0 h-full z-50 animate-slide-in-left">
-          <Sidebar 
-            companies={companies} 
-            selectedCompanyId={selectedCompanyId}
-            onSelectCompany={setSelectedCompanyId}
-            onAddClick={() => setActiveTab('Planes')} 
-          />
-        </div>
+        <Sidebar 
+          companies={companies} 
+          selectedCompanyId={selectedCompanyId}
+          onSelectCompany={setSelectedCompanyId}
+          onAddClick={() => setActiveTab('Planes')} 
+        />
       )}
 
-      <main className={`p-8 w-full transition-all duration-500 ease-in-out min-h-screen ${currentSection === 'CLIENTES' ? 'pl-40 pr-8' : 'max-w-6xl mx-auto'}`}>
-        
-        <button onClick={handleLogout} className="fixed top-6 right-8 text-sm text-red-400 hover:text-red-600 font-bold z-50 hover:underline transition">Cerrar Sesión</button>
-        
+      {/* CONTENIDO PRINCIPAL */}
+      <main 
+        className={`
+          pt-24 px-8 w-full transition-all duration-500 ease-in-out min-h-screen 
+          ${currentSection === 'CLIENTES' ? 'pl-40' : 'max-w-6xl mx-auto'}
+        `}
+      >
+        {/* NAVEGACIÓN Y TÍTULOS */}
         <div className="flex items-center justify-center gap-4 mb-8 relative">
           {currentSection === 'CLIENTES' && (
-             <button onClick={goToInventory} className="absolute left-0 text-3xl text-blue-900 font-bold hover:-translate-x-1 transition transform p-2 rounded-full hover:bg-blue-50">←</button>
+             <button 
+               onClick={goToInventory} 
+               className="absolute left-0 text-sm font-bold text-blue-900 hover:-translate-x-1 transition transform px-4 py-2 rounded-xl bg-blue-50 border border-blue-100 flex items-center gap-2"
+             >
+               ← Volver
+             </button>
           )}
-          <h1 className="text-4xl font-normal text-black text-center tracking-tight">
-            {currentSection === 'INVENTARIO' ? 'Sistema de Gestión de Inventarios' : 'Reserva de Clientes'}
+          <h1 className="text-3xl font-light text-gray-400 text-center tracking-tight hidden md:block">
+            {currentSection === 'INVENTARIO' ? 'Panel de Control / Almacén' : 'Gestión de Clientes'}
           </h1>
         </div>
 
@@ -118,7 +139,8 @@ function App() {
           />
         </div>
 
-        <div className="animate-fade-in min-h-[600px]">
+        {/* VISTAS */}
+        <div className="animate-fade-in min-h-[600px] pb-20">
           {currentSection === 'INVENTARIO' && (
             <>
               {activeTab === 'Productos' && <ProductTable />}
@@ -129,14 +151,8 @@ function App() {
 
           {currentSection === 'CLIENTES' && (
             <>
-              {/* Pasamos la función handlePlanClick a PlanesView */}
               {activeTab === 'Planes' && <PlanesView onPlanSelect={handlePlanClick} />}
-              
-              {/* Pasamos todos los datos del JSON al componente Documentos */}
-              {activeTab === 'Documentos' && (
-                <ClientDocuments selectedCompany={currentCompany} />
-              )}
-              
+              {activeTab === 'Documentos' && <ClientDocuments selectedCompany={currentCompany} />}
               {activeTab === 'Control' && <ClientControl selectedCompany={currentCompany}/>}
             </>
           )}
